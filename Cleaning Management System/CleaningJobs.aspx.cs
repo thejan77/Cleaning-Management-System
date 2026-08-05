@@ -61,7 +61,7 @@ public partial class CleaningJob : Page
             BindDropDown(con, "SELECT TeamID, TeamName FROM CmsTeam WHERE Active = 1 ORDER BY TeamName",
                 ddlTeam, "TeamID", "TeamName", " Select Team ");
 
-            BindDropDown(con, "SELECT StaffID, Name FROM CmsStaff ORDER BY Name",
+            BindDropDown(con, "SELECT StaffID, Name FROM CmsStaff WHERE RoleID = 3 ORDER BY Name",
                 ddlStaff, "StaffID", "Name", "Select Staff ");
 
             BindDropDown(con,
