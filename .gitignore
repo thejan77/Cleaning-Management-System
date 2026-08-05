@@ -1,0 +1,2 @@
+# Ignore Web.config to prevent local database connection strings/settings from being tracked
+[Ww]eb.config
