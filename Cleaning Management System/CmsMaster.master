@@ -1,4 +1,4 @@
-<%@ Master Language="C#" AutoEventWireup="true" CodeFile="CmsMaster.master.cs" Inherits="CmsMaster" %>
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="CmsMaster.master.cs" Inherits="CmsMaster" %>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -12,6 +12,7 @@
 
     <style>
         :root {
+           
             --black: #0B0D12;
             --black-dark: #000000;
             --orange: #E8622D;
@@ -20,6 +21,7 @@
             --gray-text: #64748B;
             --border-color: #E2E8F0;
             --sidebar-width: 250px;
+
         }
 
         * { box-sizing: border-box; }
@@ -348,9 +350,11 @@
                 <a href="~/Staff.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-user"></i> Staff</a>
                 <a href="~/Machine.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-gears"></i> Machines</a>
                 <a href="~/UserAccount.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-users-gear"></i> User Accounts</a>
+            
             </asp:PlaceHolder>
 
             <!-- APPLICATIONS - Admin & Supervisor -->
+    
             <asp:PlaceHolder ID="phApplications" runat="server">
                 <div class="cms-nav-section-title">APPLICATIONS</div>
                 <a href="~/CleaningSchedule.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-calendar-days"></i> Cleaning Schedule</a>
@@ -367,6 +371,8 @@
                 <div class="cms-nav-section-title">MY WORK</div>
                 <a href="~/DashboardStaff.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-list-check"></i> My Dashboard</a>
                 <a href="~/Breakdown.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-triangle-exclamation"></i> Report Breakdown</a>
+                <a href="~/Apps/MyJobs.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-list-check"></i> My Jobs Today</a>
+                <a href="~/Apps/ReportBreakdown.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-triangle-exclamation"></i> Report Breakdown</a>
             </asp:PlaceHolder>
 
             <!-- Contractor-only simplified menu -->
@@ -374,6 +380,8 @@
                 <div class="cms-nav-section-title">MY WORK</div>
                 <a href="~/DashboardContractor.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-screwdriver-wrench"></i> My Dashboard</a>
                 <a href="~/Breakdown.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-triangle-exclamation"></i> Report Breakdown</a>
+                <a href="~/Apps/MyMaintenance.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-screwdriver-wrench"></i> Maintenance Schedule</a>
+                <a href="~/Apps/ReportBreakdown.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-triangle-exclamation"></i> Report Breakdown</a>
             </asp:PlaceHolder>
 
             <asp:PlaceHolder ID="phReports" runat="server">

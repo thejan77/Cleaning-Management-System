@@ -61,7 +61,7 @@ public partial class CleaningJob : Page
             BindDropDown(con, "SELECT TeamID, TeamName FROM CmsTeam WHERE Active = 1 ORDER BY TeamName",
                 ddlTeam, "TeamID", "TeamName", " Select Team ");
 
-            BindDropDown(con, "SELECT StaffID, Name FROM CmsStaff WHERE RoleID = 3 ORDER BY Name",
+            BindDropDown(con, "SELECT StaffID, Name FROM CmsStaff ORDER BY Name",
                 ddlStaff, "StaffID", "Name", "Select Staff ");
 
             BindDropDown(con,
@@ -74,7 +74,7 @@ public partial class CleaningJob : Page
 
            
             BindDropDown(con,
-     @"SELECT 
+          @"SELECT 
           cs.ScheduleID,
           'SCH-' + RIGHT('000' + CONVERT(varchar, cs.ScheduleID), 3)
           + ' - '
@@ -279,11 +279,11 @@ public partial class CleaningJob : Page
         litModalTitle.Text = "Add Cleaning Job";
         OpenModal();
     }
+
+
     protected void rptJobs_ItemCommand(object source, RepeaterCommandEventArgs e)
     {
         int jobId = Convert.ToInt32(e.CommandArgument);
-
-        litError.Text = "Edit clicked JobID = " + jobId;
 
         if (e.CommandName == "EditJob")
         {
@@ -434,7 +434,7 @@ public partial class CleaningJob : Page
 
             ddlTeamSupervisor.Items.Insert(
                 0,
-                new ListItem("-- Select Supervisor --", "")
+                new ListItem(" Select Supervisor ", "")
             );
         }
     }
@@ -523,73 +523,164 @@ public partial class CleaningJob : Page
         }
 
 
-        OpenModal();
+        OpenModal();         
     }
 
 
     protected void btnSaveRecord_Click(object sender, EventArgs e)
     {
-        if (!Page.IsValid) { OpenModal(); return; }
+        if (!Page.IsValid)
+        {
+            OpenModal();
+            return;
+        }
 
         int jobId;
         int.TryParse(hfJobID.Value, out jobId);
-
-        litError.Text = "JobID = " + jobId;
 
         int currentUserId = 1;
 
         try
         {
-            using (var con = new SqlConnection(connStr))
+            using (SqlConnection con = new SqlConnection(connStr))
             {
                 con.Open();
+
                 SqlCommand cmd;
 
                 if (jobId == 0)
                 {
                     cmd = new SqlCommand(@"
-                        INSERT INTO CmsJob
-                            (SectionID, ScheduleID, Description, ScheduledDate, ExpectedCompletionDate,
-                             Status, AssignmentType, TeamID, StaffID, TeamSupervisorID, CleaningType, Priority,
-                             CreatedDate, CreatedBy, Frequency)
-                        VALUES
-                            (@SectionID, @ScheduleID, @Description, @ScheduledDate, @ExpectedCompletionDate,
-                             @Status, @AssignmentType, @TeamID, @StaffID, @TeamSupervisorID, @CleaningType, @Priority,
-                             GETDATE(), @CreatedBy, @Frequency)", con);
+                INSERT INTO CmsJob
+                (
+                    SectionID,
+                    ScheduleID,
+                    Description,
+                    ScheduledDate,
+                    ExpectedCompletionDate,
+                    Status,
+                    AssignmentType,
+                    TeamID,
+                    StaffID,
+                    TeamSupervisorID,
+                    CleaningType,
+                    Priority,
+                    CreatedDate,
+                    CreatedBy,
+                    Frequency
+                )
+                OUTPUT INSERTED.JobID
+                VALUES
+                (
+                    @SectionID,
+                    @ScheduleID,
+                    @Description,
+                    @ScheduledDate,
+                    @ExpectedCompletionDate,
+                    @Status,
+                    @AssignmentType,
+                    @TeamID,
+                    @StaffID,
+                    @TeamSupervisorID,
+                    @CleaningType,
+                    @Priority,
+                    GETDATE(),
+                    @CreatedBy,
+                    @Frequency
+                )", con);
+
                     cmd.Parameters.AddWithValue("@CreatedBy", currentUserId);
                 }
                 else
                 {
                     cmd = new SqlCommand(@"
-                        UPDATE CmsJob SET
-                            SectionID = @SectionID, ScheduleID = @ScheduleID,
-                            Description = @Description, ScheduledDate = @ScheduledDate,
-                            ExpectedCompletionDate = @ExpectedCompletionDate, Status = @Status,
-                            AssignmentType = @AssignmentType, TeamID = @TeamID, StaffID = @StaffID,
-                            TeamSupervisorID = @TeamSupervisorID, CleaningType = @CleaningType,
-                            Priority = @Priority, Frequency = @Frequency
-                        WHERE JobID = @JobID", con);
+                UPDATE CmsJob
+                SET
+                    SectionID=@SectionID,
+                    ScheduleID=@ScheduleID,
+                    Description=@Description,
+                    ScheduledDate=@ScheduledDate,
+                    ExpectedCompletionDate=@ExpectedCompletionDate,
+                    Status=@Status,
+                    AssignmentType=@AssignmentType,
+                    TeamID=@TeamID,
+                    StaffID=@StaffID,
+                    TeamSupervisorID=@TeamSupervisorID,
+                    CleaningType=@CleaningType,
+                    Priority=@Priority,
+                    Frequency=@Frequency
+                WHERE JobID=@JobID", con);
+
                     cmd.Parameters.AddWithValue("@JobID", jobId);
                 }
 
                 bool isTeam = ddlAssignmentType.SelectedValue == "Team";
 
                 cmd.Parameters.AddWithValue("@SectionID", Convert.ToInt32(ddlSection.SelectedValue));
-                cmd.Parameters.AddWithValue("@ScheduleID", string.IsNullOrEmpty(ddlSchedule.SelectedValue) ? (object)DBNull.Value : Convert.ToInt32(ddlSchedule.SelectedValue));
 
-                cmd.Parameters.AddWithValue("@Description", string.IsNullOrEmpty(txtDescription.Text) ? (object)DBNull.Value : txtDescription.Text.Trim());
-                cmd.Parameters.AddWithValue("@ScheduledDate", string.IsNullOrEmpty(txtScheduledDate.Text) ? (object)DBNull.Value : Convert.ToDateTime(txtScheduledDate.Text));
-                cmd.Parameters.AddWithValue("@ExpectedCompletionDate", string.IsNullOrEmpty(txtExpectedCompletionDate.Text) ? (object)DBNull.Value : Convert.ToDateTime(txtExpectedCompletionDate.Text));
+                cmd.Parameters.AddWithValue("@ScheduleID",
+                    string.IsNullOrEmpty(ddlSchedule.SelectedValue)
+                    ? (object)DBNull.Value
+                    : Convert.ToInt32(ddlSchedule.SelectedValue));
+
+                cmd.Parameters.AddWithValue("@Description",
+                    string.IsNullOrWhiteSpace(txtDescription.Text)
+                    ? (object)DBNull.Value
+                    : txtDescription.Text.Trim());
+
+                cmd.Parameters.AddWithValue("@ScheduledDate",
+                    string.IsNullOrWhiteSpace(txtScheduledDate.Text)
+                    ? (object)DBNull.Value
+                    : Convert.ToDateTime(txtScheduledDate.Text));
+
+                cmd.Parameters.AddWithValue("@ExpectedCompletionDate",
+                    string.IsNullOrWhiteSpace(txtExpectedCompletionDate.Text)
+                    ? (object)DBNull.Value
+                    : Convert.ToDateTime(txtExpectedCompletionDate.Text));
+
                 cmd.Parameters.AddWithValue("@Status", ddlStatus.SelectedValue);
+
                 cmd.Parameters.AddWithValue("@AssignmentType", ddlAssignmentType.SelectedValue);
-                cmd.Parameters.AddWithValue("@TeamID", isTeam && !string.IsNullOrEmpty(ddlTeam.SelectedValue) ? (object)Convert.ToInt32(ddlTeam.SelectedValue) : DBNull.Value);
-                cmd.Parameters.AddWithValue("@StaffID", !isTeam && !string.IsNullOrEmpty(ddlStaff.SelectedValue) ? (object)Convert.ToInt32(ddlStaff.SelectedValue) : DBNull.Value);
-                cmd.Parameters.AddWithValue("@TeamSupervisorID", string.IsNullOrEmpty(ddlTeamSupervisor.SelectedValue) ? (object)DBNull.Value : Convert.ToInt32(ddlTeamSupervisor.SelectedValue));
-                cmd.Parameters.AddWithValue("@CleaningType", string.IsNullOrEmpty(ddlCleaningType.SelectedValue) ? (object)DBNull.Value : ddlCleaningType.SelectedValue);
+
+                cmd.Parameters.AddWithValue("@TeamID",
+                    isTeam && !string.IsNullOrEmpty(ddlTeam.SelectedValue)
+                    ? (object)Convert.ToInt32(ddlTeam.SelectedValue)
+                    : DBNull.Value);
+
+                cmd.Parameters.AddWithValue("@StaffID",
+                    !isTeam && !string.IsNullOrEmpty(ddlStaff.SelectedValue)
+                    ? (object)Convert.ToInt32(ddlStaff.SelectedValue)
+                    : DBNull.Value);
+
+                cmd.Parameters.AddWithValue("@TeamSupervisorID",
+                    string.IsNullOrEmpty(ddlTeamSupervisor.SelectedValue)
+                    ? (object)DBNull.Value
+                    : Convert.ToInt32(ddlTeamSupervisor.SelectedValue));
+
+                cmd.Parameters.AddWithValue("@CleaningType",
+                    string.IsNullOrEmpty(ddlCleaningType.SelectedValue)
+                    ? (object)DBNull.Value
+                    : ddlCleaningType.SelectedValue);
+
                 cmd.Parameters.AddWithValue("@Priority", ddlPriority.SelectedValue);
+
                 cmd.Parameters.AddWithValue("@Frequency", ddlFrequency.SelectedValue);
 
-                using (cmd) { cmd.ExecuteNonQuery(); }
+                if (jobId == 0)
+                {
+                    jobId = Convert.ToInt32(cmd.ExecuteScalar());
+
+                
+                    InsertJobMaintenance(jobId);
+                }
+                else
+                {
+         
+                    cmd.ExecuteNonQuery();
+
+      
+                    UpdateJobMaintenance(jobId);
+                }
             }
 
             CloseModal();
@@ -598,26 +689,10 @@ public partial class CleaningJob : Page
         }
         catch (Exception ex)
         {
-            litError.Text = "<div style='color:#DC2626; margin-top:8px; font-size:13px;'>Could not save the record: " + ex.Message + "</div>";
+            litError.Text = "<div style='color:#DC2626; margin-top:8px; font-size:13px;'>Could not save the record: "
+                + ex.Message + "</div>";
+
             OpenModal();
-        }
-    }
-
-    private void DeleteJob(int jobId)
-    {
-        using (var con = new SqlConnection(connStr))
-        using (var cmd = new SqlCommand("DELETE FROM CmsJob WHERE JobID = @JobID", con))
-        {
-            cmd.Parameters.AddWithValue("@JobID", jobId);
-            con.Open();
-            try
-            {
-                cmd.ExecuteNonQuery();
-            }
-            catch (SqlException)
-            {
-
-            }
         }
     }
 
@@ -663,6 +738,125 @@ public partial class CleaningJob : Page
     {
         pnlModalOverlay.CssClass = "cj-modal-overlay";
         ResetForm();
+    }
+
+    private void DeleteJob(int jobId)
+    {
+        using (SqlConnection con = new SqlConnection(connStr))
+        {
+            con.Open();
+
+            SqlTransaction tran = con.BeginTransaction();
+
+            try
+            {
+               
+                SqlCommand cmd1 = new SqlCommand(
+                    "DELETE FROM CmsJobMaintenanceRecord WHERE JobID=@JobID",
+                    con, tran);
+
+                cmd1.Parameters.AddWithValue("@JobID", jobId);
+                cmd1.ExecuteNonQuery();
+
+         
+                SqlCommand cmd2 = new SqlCommand(
+                    "DELETE FROM CmsJob WHERE JobID=@JobID",
+                    con, tran);
+
+                cmd2.Parameters.AddWithValue("@JobID", jobId);
+                cmd2.ExecuteNonQuery();
+
+                tran.Commit();
+            }
+            catch
+            {
+                tran.Rollback();
+                throw;
+            }
+        }
+    }
+
+    private void InsertJobMaintenance(int jobId)
+    {
+        using (SqlConnection con = new SqlConnection(connStr))
+        {
+            string sql = @"
+        INSERT INTO CmsJobMaintenanceRecord
+        (
+            JobID,
+            WorkDate,
+            WorkTime,
+            WorkDetails,
+            TeamID,
+            TeamSupervisorID
+        )
+        VALUES
+        (
+            @JobID,
+            GETDATE(),
+            @WorkTime,
+            @WorkDetails,
+            @TeamID,
+            @TeamSupervisorID
+        )";
+
+            SqlCommand cmd = new SqlCommand(sql, con);
+
+            cmd.Parameters.AddWithValue("@JobID", jobId);
+
+            cmd.Parameters.AddWithValue("@WorkTime",
+                DateTime.Now.TimeOfDay);
+
+            cmd.Parameters.AddWithValue("@WorkDetails",
+                "Job Created");
+
+            cmd.Parameters.AddWithValue("@TeamID",
+                string.IsNullOrEmpty(ddlTeam.SelectedValue)
+                ? (object)DBNull.Value
+                : Convert.ToInt32(ddlTeam.SelectedValue));
+
+            cmd.Parameters.AddWithValue("@TeamSupervisorID",
+                string.IsNullOrEmpty(ddlTeamSupervisor.SelectedValue)
+                ? (object)DBNull.Value
+                : Convert.ToInt32(ddlTeamSupervisor.SelectedValue));
+
+
+            con.Open();
+            cmd.ExecuteNonQuery();
+        }
+    }
+
+    private void UpdateJobMaintenance(int jobId)
+    {
+        using (SqlConnection con = new SqlConnection(connStr))
+        {
+            string sql = @"
+        UPDATE CmsJobMaintenanceRecord
+        SET
+            TeamID = @TeamID,
+            TeamSupervisorID = @TeamSupervisorID
+        WHERE JobID = @JobID";
+
+
+            SqlCommand cmd = new SqlCommand(sql, con);
+
+            cmd.Parameters.AddWithValue("@JobID", jobId);
+
+            cmd.Parameters.AddWithValue("@TeamID",
+                string.IsNullOrEmpty(ddlTeam.SelectedValue)
+                ? (object)DBNull.Value
+                : Convert.ToInt32(ddlTeam.SelectedValue));
+
+
+            cmd.Parameters.AddWithValue("@TeamSupervisorID",
+                string.IsNullOrEmpty(ddlTeamSupervisor.SelectedValue)
+                ? (object)DBNull.Value
+                : Convert.ToInt32(ddlTeamSupervisor.SelectedValue));
+
+
+            con.Open();
+            cmd.ExecuteNonQuery();
+        }
     }
 
     #endregion

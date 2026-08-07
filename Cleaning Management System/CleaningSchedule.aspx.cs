@@ -51,7 +51,7 @@ public partial class CleaningSchedule : Page
             con.Open();
 
             BindDropDown(con, "SELECT SectionID, SectionName FROM CmsSection ORDER BY SectionName",
-                ddlSection, "SectionID", "SectionName", "-- Select Section --");
+                ddlSection, "SectionID", "SectionName", " Select Section ");
 
             BindDropDown(con, "SELECT SectionID, SectionName FROM CmsSection ORDER BY SectionName",
                 ddlFilterSection, "SectionID", "SectionName", "All Sections");
@@ -116,7 +116,7 @@ public partial class CleaningSchedule : Page
         }
     }
 
-    // Formats the real (auto-increment) ScheduleID as a display code, e.g. 12 -> "SCH-012"
+    
     protected string FormatScheduleCode(int scheduleId)
     {
         return "SCH-" + scheduleId.ToString("D3");
@@ -142,8 +142,6 @@ public partial class CleaningSchedule : Page
         pnlCalendarSection.Visible = ActiveView == "Calendar";
         pnlTableView.Visible = ActiveView == "Table";
 
-        // Frequency filter only applies to Table view — Calendar view already
-        // splits schedules by frequency via the Daily/Weekly/Monthly tabs.
         pnlFilters.CssClass = "sch-filters" + (ActiveView == "Table" ? "" : " no-freq");
     }
 
@@ -221,13 +219,13 @@ public partial class CleaningSchedule : Page
     private void BindTableView()
     {
         const string sql = @"
-            SELECT cs.ScheduleID, cs.CleaningType, cs.Frequency, cs.RepeatTime, cs.StartDate, cs.Status, sec.SectionName
-            FROM CmsCleaningSchedule cs
-            JOIN CmsSection sec ON sec.SectionID = cs.SectionID
-            WHERE (@SectionID = '' OR cs.SectionID = @SectionID)
-              AND (@Status = '' OR cs.Status = @Status)
-              AND (@Frequency = '' OR cs.Frequency = @Frequency)
-            ORDER BY cs.Frequency ASC, cs.StartDate ASC, cs.RepeatTime ASC";
+    SELECT cs.ScheduleID, cs.CleaningType, cs.Frequency, cs.RepeatTime, cs.StartDate, cs.Status, sec.SectionName
+    FROM CmsCleaningSchedule cs
+    JOIN CmsSection sec ON sec.SectionID = cs.SectionID
+    WHERE (@SectionID = '' OR cs.SectionID = @SectionID)
+      AND (@Status = '' OR cs.Status = @Status)
+      AND (@Frequency = '' OR cs.Frequency = @Frequency)
+    ORDER BY cs.ScheduleID DESC";
 
         var dt = new DataTable();
         using (var con = new SqlConnection(connStr))
@@ -399,7 +397,6 @@ public partial class CleaningSchedule : Page
             return;
         }
 
-        // Group rows by the weekday derived from StartDate (recurs weekly on that day)
         var byDay = new Dictionary<DayOfWeek, List<DataRow>>();
         foreach (DayOfWeek d in Enum.GetValues(typeof(DayOfWeek)))
             byDay[d] = new List<DataRow>();
@@ -507,7 +504,6 @@ public partial class CleaningSchedule : Page
             }
         }
 
-        // Group rows by day-of-month (recurs monthly on that date)
         var byDayOfMonth = new Dictionary<int, List<DataRow>>();
         foreach (DataRow row in dt.Rows)
         {
@@ -587,7 +583,6 @@ public partial class CleaningSchedule : Page
         OpenModal();
     }
 
-    // Hidden proxy buttons: fired via JS __doPostBack from cards/chips/rows built as raw HTML
     protected void lnkProxyEdit_Click(object sender, EventArgs e)
     {
         int scheduleId = Convert.ToInt32(hfActionScheduleID.Value);
@@ -707,7 +702,6 @@ public partial class CleaningSchedule : Page
             }
             catch (SqlException)
             {
-                // swallow - e.g. FK constraint from related jobs
             }
         }
     }
@@ -717,10 +711,26 @@ public partial class CleaningSchedule : Page
         CloseModal();
     }
 
+    private string GetNextScheduleCode()
+    {
+        using (SqlConnection con = new SqlConnection(connStr))
+        {
+            con.Open();
+
+            SqlCommand cmd = new SqlCommand(
+                "SELECT ISNULL(MAX(ScheduleID),0) + 1 FROM CmsCleaningSchedule",
+                con);
+
+            int nextId = Convert.ToInt32(cmd.ExecuteScalar());
+
+            return "SCH-" + nextId.ToString("D3");
+        }
+    }
+
     private void ResetForm()
     {
         hfScheduleID.Value = "0";
-        txtScheduleCode.Text = "Auto-generated on save";
+        txtScheduleCode.Text = GetNextScheduleCode();
         ddlSection.SelectedValue = "";
         ddlCleaningType.SelectedValue = "";
         ddlFrequency.SelectedValue = "Daily";

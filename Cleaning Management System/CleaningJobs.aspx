@@ -627,7 +627,7 @@
                         </div>
 
                         <div class="cj-field">
-                            <label>Linked Schedule (optional)</label>
+                            <label>Linked Schedule </label>
                             <asp:DropDownList ID="ddlSchedule"
                                 runat="server"
                                 AutoPostBack="true"
@@ -651,7 +651,7 @@
 
     </div>
 
-    <script>
+    <script><a href="CleaningJobs.aspx">CleaningJobs.aspx</a>
         function cjToggleAssignment(val) {
             var teamField = document.getElementById('<%= pnlTeam.ClientID %>');
             var staffField = document.getElementById('<%= pnlStaff.ClientID %>');

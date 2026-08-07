@@ -145,7 +145,7 @@
 
         .jmr-rec-id {
             font-weight: 600;
-            color: var(--gray-text);
+            color: var(--black);
         }
 
         .jmr-job-tag {
@@ -164,26 +164,43 @@
             line-height: 1.4;
         }
 
-        .jmr-badge {
+        jmr-badge {
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #fff;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            border: 1px solid transparent;
             white-space: nowrap;
         }
 
+
         .status-Pending {
-            background: #F0A93A;
+            background: #FFF7E6;
+            color: #E8622D;
+            border-color: #E8622D;
         }
+
 
         .status-InProgress {
-            background: #3B82F6;
+            background: #FFF7E6;
+            color: #E8622D;
+            border-color: #E8622D;
         }
 
+
         .status-Completed {
-            background: #16A34A;
+            background: #ECFDF5;
+            color: #15803D;
+            border-color: #15803D;
+        }
+
+        .status-Cancelled {
+            background: #FEF2F2;
+            color: #DC2626;
+            border-color: #DC2626;
         }
 
         .jmr-table-footer {
@@ -221,12 +238,15 @@
 
         <div class="jmr-filter-group">
             <label>Status</label>
+
             <asp:DropDownList ID="ddlStatus" runat="server" CssClass="jmr-select">
                 <asp:ListItem Text="All statuses" Value="" />
                 <asp:ListItem Text="Pending" Value="Pending" />
-                <asp:ListItem Text="In Progress" Value="InProgress" />
+                <asp:ListItem Text="In Progress" Value="In Progress" />
                 <asp:ListItem Text="Completed" Value="Completed" />
+                <asp:ListItem Text="Cancelled" Value="Cancelled" />
             </asp:DropDownList>
+
         </div>
 
         <div class="jmr-filter-group">
@@ -252,11 +272,11 @@
             <Columns>
                 <asp:TemplateField HeaderText="Record">
                     <ItemTemplate>
-                        <span class="jmr-rec-id">#<%# Eval("RecordID") %></span>
+                        <span class="jmr-rec-id">REC-<%# Eval("RecordID", "{0:000}") %></span>
                     </ItemTemplate>
                 </asp:TemplateField>
 
-                <asp:TemplateField HeaderText="Job">
+                <asp:TemplateField HeaderText="Job ID">
                     <ItemTemplate>
                         <span class="jmr-job-tag">JOB-<%# Eval("JobID") %></span>
                     </ItemTemplate>
@@ -270,7 +290,9 @@
 
                 <asp:TemplateField HeaderText="Status">
                     <ItemTemplate>
-                        <span class='jmr-badge status-<%# Eval("Status") %>'><%# Eval("Status") %></span>
+                        <span class="jmr-badge <%# GetStatusClass(Eval("Status").ToString()) %>">
+                            <%# Eval("Status").ToString().ToUpper() %>
+                        </span>
                     </ItemTemplate>
                 </asp:TemplateField>
 
@@ -288,7 +310,7 @@
 
     <div class="jmr-table-footer">
         <asp:Label ID="lblResultCount" runat="server" Text="Showing 0 records" />
-    
+
     </div>
 
 </asp:Content>

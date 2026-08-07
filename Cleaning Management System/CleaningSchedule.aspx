@@ -51,7 +51,6 @@
                 align-items: center;
                 gap: 10px;
             }
-            /* ===== View toggle (Table / Calendar icon buttons) ===== */
             .sch-view-toggle {
                 display: flex;
                 background: #fff;
@@ -182,61 +181,69 @@
                     background: var(--black);
                     color: #fff;
                 }
+.sch-filters {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: grid;
+    grid-template-columns: 230px 230px 230px auto;
+    gap: 12px;
+    align-items: end;
+    justify-content: start;
+    margin-bottom: 20px;
+}
 
-            .sch-filters {
-                background: #fff;
-                border: 1px solid var(--border-color);
-                border-radius: 12px;
-                padding: 18px 20px;
-                display: grid;
-                grid-template-columns: 1fr 1fr 1fr auto;
-                gap: 16px;
-                align-items: end;
-                margin-bottom: 20px;
-            }
-                /* Calendar view has no use for the Frequency filter - the Daily/Weekly/Monthly
-                   tabs already do that job, so it's hidden and the grid collapses to 3 columns. */
-                .sch-filters.no-freq {
-                    grid-template-columns: 1fr 1fr auto;
-                }
 
-                    .sch-filters.no-freq .sch-filter-freq {
-                        display: none;
-                    }
+.sch-filters.no-freq {
+    grid-template-columns: 230px 230px auto;
+    justify-content: start;
+    gap: 12px;
+}
 
-            .sch-filter-label {
-                display: block;
-                text-transform: uppercase;
-                font-size: 11px;
-                font-weight: 600;
-                color: var(--gray-text);
-                margin-bottom: 6px;
-            }
+.sch-filters.no-freq .sch-filter-freq {
+    display: none;
+}
 
-            .sch-filters select {
-                width: 100%;
-                padding: 9px 10px;
-                border: 1px solid var(--border-color);
-                border-radius: 6px;
-                font-size: 14px;
-                background: #fff;
-            }
+.sch-filter-label {
+    display: block;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-text);
+    margin-bottom: 6px;
+}
 
-            .sch-clear-btn {
-                background: #fff;
-                border: 1px solid var(--border-color);
-                color: var(--black);
-                padding: 9px 16px;
-                border-radius: 6px;
-                font-weight: 600;
-                cursor: pointer;
-                height: 40px;
-                text-decoration: none !important;
-            }
+.sch-filters select {
+    width: 230px;
+    height: 40px;
+    padding: 9px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    box-sizing: border-box;
+}
 
-                .sch-clear-btn:hover {
-                    text-decoration: none !important;
-                }
+.sch-clear-btn {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    color: var(--black);
+    padding: 0 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    height: 40px;
+    white-space: nowrap;
+    text-decoration: none !important;
+}
+
+.sch-clear-btn:hover {
+    background: var(--bg-light);
+    border-color: var(--orange);
+    color: var(--orange);
+    text-decoration: none !important;
+}
 
             .sch-pill {
                 display: inline-block;
@@ -271,7 +278,7 @@
                 color: var(--gray-text);
                 font-size: 14px;
             }
-            /* ===== TABLE VIEW ===== */
+            
             .sch-table-wrap {
                 background: #fff;
                 border-radius: 12px;
@@ -344,7 +351,7 @@
                 .sch-row-actions a:last-child {
                     margin-right: 0;
                 }
-            /* ===== DAILY: agenda / timeline ===== */
+        
             .sch-daily-wrap {
                 display: flex;
                 gap: 24px;
@@ -423,7 +430,7 @@
                 border-radius: 50%;
                 background: var(--border-color);
             }
-            /* ===== DAILY CARDS (Weekly Style) ===== */
+            
 
             .sch-job-card {
                 background: #fff;
@@ -490,7 +497,6 @@
                     color: var(--orange);
                     text-decoration: underline;
                 }
-            /* ===== WEEKLY: 7-day grid ===== */
             .sch-weekly-wrap {
                 background: #fff;
                 border: 1px solid var(--border-color);
@@ -566,7 +572,7 @@
                 padding: 2px 8px;
                 border-radius: 20px;
             }
-            /* ===== MONTHLY: calendar ===== */
+           
             .sch-monthly-wrap {
                 background: #fff;
                 border: 1px solid var(--border-color);
@@ -658,7 +664,7 @@
                 color: var(--gray-text);
                 font-size: 10px;
             }
-            /* ===== Modal (unchanged) ===== */
+           
             .sch-modal-overlay {
                 display: none;
                 position: fixed;
