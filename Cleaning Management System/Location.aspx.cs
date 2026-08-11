@@ -12,10 +12,25 @@ public partial class CleaningManagement_Masters_Location : System.Web.UI.Page
         get { return ConfigurationManager.ConnectionStrings["CmsConnectionString"].ConnectionString; }
     }
 
-    private int CurrentUserID { get { return 2; } } // temporary workaround
+    private int CurrentUserID
+    {
+        get { return Session["UserID"] != null ? Convert.ToInt32(Session["UserID"]) : 0; }
+    }
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["UserID"] == null || Session["UserRole"] == null)
+        {
+            Response.Redirect("~/Login.aspx");
+            return;
+        }
+
+        if (Session["UserRole"].ToString() != "Admin")
+        {
+            Response.Redirect("~/Login.aspx");
+            return;
+        }
+
         if (!IsPostBack)
         {
             BindLocationsGrid();
@@ -117,7 +132,26 @@ public partial class CleaningManagement_Masters_Location : System.Web.UI.Page
     // ── Edit row ──
     protected void gvLocations_RowCommand(object sender, GridViewCommandEventArgs e)
     {
-        if (e.CommandName == "EditLocation")
+        if (e.CommandName == "RemoveLocation")
+        {
+            int locationId = Convert.ToInt32(e.CommandArgument);
+            using (SqlConnection con = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand("SP_CMS_DeleteLocation", con))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@LocationID", locationId);
+                con.Open();
+                int result = Convert.ToInt32(cmd.ExecuteScalar());
+                if (result == -1)
+                {
+                    ShowMessage("Cannot remove — sections exist under this location. Remove sections first.", false);
+                    return;
+                }
+            }
+            BindLocationsGrid();
+            ShowMessage("Location removed.", true);
+        }
+        else if (e.CommandName == "EditLocation")
         {
             int locationId = Convert.ToInt32(e.CommandArgument);
             LoadLocationForEdit(locationId);

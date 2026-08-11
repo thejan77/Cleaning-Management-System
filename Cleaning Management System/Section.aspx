@@ -204,6 +204,17 @@
             color: var(--orange-dark);
             text-decoration: underline;
         }
+        .remove-link {
+    color: #DC3545;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    margin-left: 10px;
+}
+.remove-link:hover {
+    color: #B02A37;
+    text-decoration: underline;
+}
     </style>
 
     <div class="cms-page-title">Sections</div>
@@ -301,12 +312,17 @@
                     </ItemTemplate>
                 </asp:TemplateField>
                 <asp:BoundField DataField="Description" HeaderText="Description" />
-                <asp:TemplateField HeaderText="Action">
+               <asp:TemplateField HeaderText="Action">
                     <ItemTemplate>
                         <asp:LinkButton ID="lnkEdit" runat="server"
                             CssClass="edit-link"
                             CommandName="EditSection"
                             CommandArgument='<%# Eval("SectionID") %>'>Edit</asp:LinkButton>
+                        <asp:LinkButton ID="lnkRemove" runat="server"
+                            CssClass="remove-link"
+                            CommandName="RemoveSection"
+                            CommandArgument='<%# Eval("SectionID") %>'
+                            OnClientClick='<%# "return confirm(\"Remove " + Eval("SectionName") + "?\");" %>'>Remove</asp:LinkButton>
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>
@@ -314,18 +330,18 @@
     </div>
 
     <script type="text/javascript">
-function toggleSectionForm(show) {
-    var panel = document.getElementById('pnlSectionFormWrapper');
-    if (panel) panel.style.display = show ? 'block' : 'none';
-}
+        function toggleSectionForm(show) {
+            var panel = document.getElementById('pnlSectionFormWrapper');
+            if (panel) panel.style.display = show ? 'block' : 'none';
+        }
 
-function openNewSection() {
-    var sectionID = document.getElementById('hdnSectionID').value;
-    if (sectionID != "0") {
-        alert("Please cancel the current edit before adding a new section.");
-        return;
-    }
-    toggleSectionForm(true);
+        function openNewSection() {
+            var sectionID = document.getElementById('hdnSectionID').value;
+            if (sectionID != "0") {
+                alert("Please cancel the current edit before adding a new section.");
+                return;
+            }
+            toggleSectionForm(true);
         }
     </script>
 

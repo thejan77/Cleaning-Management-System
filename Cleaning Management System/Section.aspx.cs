@@ -14,6 +14,18 @@ public partial class CleaningManagement_Masters_Section : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["UserID"] == null || Session["UserRole"] == null)
+        {
+            Response.Redirect("~/Login.aspx");
+            return;
+        }
+
+        if (Session["UserRole"].ToString() != "Admin")
+        {
+            Response.Redirect("~/Login.aspx");
+            return;
+        }
+
         if (!IsPostBack)
         {
             LoadLocationDropdown();
@@ -126,6 +138,22 @@ public partial class CleaningManagement_Masters_Section : System.Web.UI.Page
 
     protected void gvSections_RowCommand(object sender, GridViewCommandEventArgs e)
     {
+        if (e.CommandName == "RemoveSection")
+        {
+            int sectionId = Convert.ToInt32(e.CommandArgument);
+            using (SqlConnection con = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand("SP_CMS_DeleteSection", con))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@SectionID", sectionId);
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+            BindSectionsGrid();
+            ShowMessage("Section removed.", true);
+        }
+
+
         if (e.CommandName == "EditSection")
         {
             int sectionId = Convert.ToInt32(e.CommandArgument);

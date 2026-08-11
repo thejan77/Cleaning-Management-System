@@ -205,6 +205,17 @@
             color: var(--orange-dark);
             text-decoration: underline;
         }
+        .remove-link {
+    color: #DC3545;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    margin-left: 10px;
+}
+.remove-link:hover {
+    color: #B02A37;
+    text-decoration: underline;
+}
     </style>
 
     <div class="cms-page-title">Locations</div>
@@ -296,12 +307,17 @@
                 </asp:TemplateField>
                 <asp:BoundField DataField="CreatedDate" HeaderText="Created"
                     DataFormatString="{0:yyyy-MM-dd}" HtmlEncode="false" />
-                <asp:TemplateField HeaderText="Action">
+               <asp:TemplateField HeaderText="Action">
                     <ItemTemplate>
                         <asp:LinkButton ID="lnkEdit" runat="server"
                             CssClass="edit-link"
                             CommandName="EditLocation"
                             CommandArgument='<%# Eval("LocationID") %>'>Edit</asp:LinkButton>
+                        <asp:LinkButton ID="lnkRemove" runat="server"
+                            CssClass="remove-link"
+                            CommandName="RemoveLocation"
+                            CommandArgument='<%# Eval("LocationID") %>'
+                            OnClientClick='<%# "return confirm(\"Remove " + Eval("LocationName") + "?\");" %>'>Remove</asp:LinkButton>
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>

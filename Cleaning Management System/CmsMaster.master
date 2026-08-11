@@ -343,7 +343,7 @@
             <!-- MASTERS - Admin only -->
             <asp:PlaceHolder ID="phMasters" runat="server">
                 <div class="cms-nav-section-title">MASTERS</div>
-                <a href="~/Location.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-location-dot"></i> Location</a>
+                <a href="Location.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-location-dot"></i> Location</a>
                 <a href="~/Section.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-border-all"></i> Section</a>
                 <a href="~/Contractor.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-helmet-safety"></i> Contractors</a>
                 <a href="~/Team.aspx" runat="server" class="cms-nav-link"><i class="fa-solid fa-people-group"></i> Team</a>

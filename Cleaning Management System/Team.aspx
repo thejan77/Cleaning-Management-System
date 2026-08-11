@@ -386,7 +386,7 @@
                      <asp:BoundField DataField="SupervisorName" HeaderText="Supervisor" />
                     <asp:BoundField DataField="CreatedDate" HeaderText="Created"
                         DataFormatString="{0:yyyy-MM-dd}" HtmlEncode="false" />
-                    <asp:TemplateField HeaderText="Action">
+                  <asp:TemplateField HeaderText="Action">
                         <ItemTemplate>
                             <asp:LinkButton ID="lnkEdit" runat="server"
                                 CssClass="edit-link"
@@ -396,6 +396,11 @@
                                 CssClass="members-link"
                                 CommandName="ManageMembers"
                                 CommandArgument='<%# Eval("TeamID") + "|" + Eval("TeamName") %>'>Manage Members</asp:LinkButton>
+                            <asp:LinkButton ID="lnkRemove" runat="server"
+                                CssClass="remove-link"
+                                CommandName="RemoveTeam"
+                                CommandArgument='<%# Eval("TeamID") %>'
+                                OnClientClick='<%# "return confirm(\"Remove team " + Eval("TeamName") + "? This will unlink all members.\");" %>'>Remove</asp:LinkButton>
                         </ItemTemplate>
                     </asp:TemplateField>
                 </Columns>

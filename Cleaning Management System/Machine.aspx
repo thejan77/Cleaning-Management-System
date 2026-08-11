@@ -363,18 +363,18 @@
     </div>
 
     <script type="text/javascript">
-function toggleMachineForm(show) {
-    var panel = document.getElementById('pnlMachineFormWrapper');
-    if (panel) panel.style.display = show ? 'block' : 'none';
-}
+        function toggleMachineForm(show) {
+            var panel = document.getElementById('pnlMachineFormWrapper');
+            if (panel) panel.style.display = show ? 'block' : 'none';
+        }
 
-function openNewMachine() {
-    var machineID = document.getElementById('hdnMachineID').value;
-    if (machineID != "0") {
-        alert("Please cancel the current edit before adding a new machine.");
-        return;
-    }
-    toggleMachineForm(true);
+        function openNewMachine() {
+            var machineID = document.getElementById('hdnMachineID').value;
+            if (machineID != "0") {
+                alert("Please cancel the current edit before adding a new machine.");
+                return;
+            }
+            toggleMachineForm(true);
         }
     </script>
 

@@ -93,7 +93,7 @@ public partial class CleaningManagement_Masters_Team : System.Web.UI.Page
 
             //Remove Supervisor system role from role dropdown
             ListItem supervisorRole = ddlMemberRole.Items.FindByValue(
-                GetRoleIDByName("Supervisor").ToString() );
+                GetRoleIDByName("Supervisor").ToString());
             if (supervisorRole != null)
                 ddlMemberRole.Items.Remove(supervisorRole);
 
@@ -156,9 +156,9 @@ public partial class CleaningManagement_Masters_Team : System.Web.UI.Page
         return false;
     }
 
-  
+
     // TEAM MASTER — grid, save, cancel, edit (Admin only)
-    
+
 
     private void BindTeamsGrid()
     {
@@ -205,7 +205,7 @@ public partial class CleaningManagement_Masters_Team : System.Web.UI.Page
                 cmd.Parameters.AddWithValue("@Description",
                     string.IsNullOrEmpty(description) ? (object)DBNull.Value : description);
                 cmd.Parameters.AddWithValue("@Active", active);
-                cmd.Parameters.AddWithValue("@SupervisorID", 
+                cmd.Parameters.AddWithValue("@SupervisorID",
                  supervisorId == 0 ? (object)DBNull.Value : supervisorId);
                 cmd.Parameters.AddWithValue("@CreatedBy", CurrentUserID);
             }
@@ -268,6 +268,20 @@ public partial class CleaningManagement_Masters_Team : System.Web.UI.Page
             btnSaveTeam.CssClass = "btn-update";
             ScriptManager.RegisterStartupScript(this, GetType(),
                 "showForm", "toggleTeamForm(true);", true);
+        }
+        else if (e.CommandName == "RemoveTeam")
+        {
+            int teamId = Convert.ToInt32(e.CommandArgument);
+            using (SqlConnection con = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand("SP_CMS_DeleteTeam", con))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@TeamID", teamId);
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+            BindTeamsGrid();
+            ShowMessage("Team removed.", true);
         }
         else if (e.CommandName == "ManageMembers")
         {
@@ -342,7 +356,7 @@ public partial class CleaningManagement_Masters_Team : System.Web.UI.Page
             : System.Drawing.Color.Red;
     }
 
-    
+
     // TEAM MEMBERS (CmsStaff)
 
 
@@ -375,11 +389,11 @@ public partial class CleaningManagement_Masters_Team : System.Web.UI.Page
             DataTable dt = new DataTable();
             da.Fill(dt);
             ddlSupervisor.DataSource = dt;
-           ddlSupervisor.DataTextField = "DisplayName";
-           ddlSupervisor.DataValueField = "UserID";
+            ddlSupervisor.DataTextField = "DisplayName";
+            ddlSupervisor.DataValueField = "UserID";
             ddlSupervisor.DataBind();
-           ddlSupervisor.Items.Insert(0,
-                new ListItem("-- None --", "0"));
+            ddlSupervisor.Items.Insert(0,
+                 new ListItem("-- None --", "0"));
         }
     }
 
@@ -462,7 +476,7 @@ public partial class CleaningManagement_Masters_Team : System.Web.UI.Page
             return;
         }
 
-        
+
 
         using (SqlConnection con = new SqlConnection(ConnStr))
         {
@@ -622,9 +636,9 @@ public partial class CleaningManagement_Masters_Team : System.Web.UI.Page
             : System.Drawing.Color.Red;
     }
 
-    
+
     // TEAM AND SECTION ASSIGNMENT (CmsTeamSection)
-    
+
 
     private void BindSectionDropdown()
     {

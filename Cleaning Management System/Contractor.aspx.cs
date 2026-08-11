@@ -14,6 +14,18 @@ public partial class CleaningManagement_Masters_Contractor : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        if (Session["UserID"] == null || Session["UserRole"] == null)
+        {
+            Response.Redirect("~/Login.aspx");
+            return;
+        }
+
+        if (Session["UserRole"].ToString() != "Admin")
+        {
+            Response.Redirect("~/Login.aspx");
+            return;
+        }
+
         if (!IsPostBack)
         {
             BindContractorsGrid();
@@ -68,13 +80,44 @@ public partial class CleaningManagement_Masters_Contractor : System.Web.UI.Page
         string contactPerson = txtContactPerson.Text.Trim();
         int contractorId = Convert.ToInt32(hdnContractorID.Value);
 
-        object startDate = string.IsNullOrEmpty(txtContractStartDate.Text)
-            ? (object)DBNull.Value
-            : Convert.ToDateTime(txtContractStartDate.Text);
+        DateTime? startDt = null;
+        DateTime? endDt = null;
 
-        object endDate = string.IsNullOrEmpty(txtContractEndDate.Text)
-            ? (object)DBNull.Value
-            : Convert.ToDateTime(txtContractEndDate.Text);
+        if (!string.IsNullOrEmpty(txtContractStartDate.Text))
+        {
+            DateTime parsedStart;
+            if (DateTime.TryParse(txtContractStartDate.Text, out parsedStart))
+                startDt = parsedStart;
+            else
+            {
+                ShowMessage("Invalid Contract Start Date format.", false);
+                ScriptManager.RegisterStartupScript(this, GetType(), "keepOpen", "toggleContractorForm(true);", true);
+                return;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(txtContractEndDate.Text))
+        {
+            DateTime parsedEnd;
+            if (DateTime.TryParse(txtContractEndDate.Text, out parsedEnd))
+                endDt = parsedEnd;
+            else
+            {
+                ShowMessage("Invalid Contract End Date format.", false);
+                ScriptManager.RegisterStartupScript(this, GetType(), "keepOpen", "toggleContractorForm(true);", true);
+                return;
+            }
+        }
+
+        if (startDt.HasValue && endDt.HasValue && endDt.Value < startDt.Value)
+        {
+            ShowMessage("Contract End Date cannot be earlier than Contract Start Date.", false);
+            ScriptManager.RegisterStartupScript(this, GetType(), "keepOpen", "toggleContractorForm(true);", true);
+            return;
+        }
+
+        object startDate = startDt.HasValue ? (object)startDt.Value : DBNull.Value;
+        object endDate = endDt.HasValue ? (object)endDt.Value : DBNull.Value;
 
         using (SqlConnection con = new SqlConnection(ConnStr))
         {
@@ -137,6 +180,20 @@ public partial class CleaningManagement_Masters_Contractor : System.Web.UI.Page
             btnSaveContractor.CssClass = "btn-update";
             ScriptManager.RegisterStartupScript(this, GetType(),
                 "showForm", "toggleContractorForm(true);", true);
+        }
+        else if (e.CommandName == "RemoveContractor")
+        {
+            int contractorId = Convert.ToInt32(e.CommandArgument);
+            using (SqlConnection con = new SqlConnection(ConnStr))
+            using (SqlCommand cmd = new SqlCommand("SP_CMS_DeleteContractor", con))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@ContractorID", contractorId);
+                con.Open();
+                cmd.ExecuteNonQuery();
+            }
+            BindContractorsGrid();
+            ShowMessage("Contractor removed.", true);
         }
     }
 

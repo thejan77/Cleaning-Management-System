@@ -228,6 +228,17 @@
 .btn-update:hover {
     background-color: #B02A37;
 }
+.remove-link {
+    color: #DC3545;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    margin-left: 10px;
+}
+.remove-link:hover {
+    color: #B02A37;
+    text-decoration: underline;
+}
     </style>
 
     <div class="cms-page-title">Contractors</div>
@@ -314,7 +325,12 @@
                 <asp:TemplateField HeaderText="Action">
                     <ItemTemplate>
                         <asp:LinkButton ID="lnkEdit" runat="server" CssClass="edit-link"
-                            CommandName="EditContractor" CommandArgument='<%# Eval("ContractorID") %>'>Edit</asp:LinkButton>
+                            CommandName="EditContractor"
+                            CommandArgument='<%# Eval("ContractorID") %>'>Edit</asp:LinkButton>
+                        <asp:LinkButton ID="lnkRemove" runat="server" CssClass="remove-link"
+                            CommandName="RemoveContractor"
+                            CommandArgument='<%# Eval("ContractorID") %>'
+                            OnClientClick='<%# "return confirm(\"Remove " + Eval("ContractorName") + "?\");" %>'>Remove</asp:LinkButton>
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>
@@ -344,7 +360,7 @@
         toggleContractorForm(true);
     }
 
-    </script>
+</script>
 
 
 </asp:Content>
